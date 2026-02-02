@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Boy Pokédex IA</title>
+  <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gb-teal: #00a5ad;
+      --gb-screen-bg: #9ca38f;
+      --gb-button: #353535;
+      --gb-dpad: #222;
+    }
+    body {
+      background-color: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    .gb-font { font-family: 'Press Start 2P', cursive; }
+    
+    /* Estilização do corpo do Game Boy */
+    .gb-body {
+      background-color: var(--gb-teal);
+      width: 420px;
+      height: 720px;
+      border-radius: 15px 15px 80px 15px;
+      position: relative;
+      padding: 40px 25px;
+      box-shadow: inset -10px -10px 15px rgba(0,0,0,0.2), 10px 10px 30px rgba(0,0,0,0.5);
+      user-select: none;
+    }
+
+    .gb-screen-frame {
+      background-color: #353535;
+      width: 100%;
+      height: 340px;
+      border-radius: 10px 10px 40px 10px;
+      padding: 30px 40px;
+      position: relative;
+    }
+
+    .gb-lcd {
+      background-color: var(--gb-screen-bg);
+      width: 100%;
+      height: 100%;
+      box-shadow: inset 3px 3px 10px rgba(0,0,0,0.3);
+      overflow: hidden;
+      position: relative;
+      border: 4px solid #1a1a1a;
+    }
+
+    .power-light {
+      width: 10px;
+      height: 10px;
+      background-color: #ff0000;
+      border-radius: 50%;
+      position: absolute;
+      left: 15px;
+      top: 100px;
+      box-shadow: 0 0 5px #ff0000;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .gb-logo {
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      font-size: 14px;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: 1px;
+    }
+    .gb-color-text span:nth-child(1) { color: #ae185d; }
+    .gb-color-text span:nth-child(2) { color: #5a2e8c; }
+    .gb-color-text span:nth-child(3) { color: #008744; }
+    .gb-color-text span:nth-child(4) { color: #f9b233; }
+    .gb-color-text span:nth-child(5) { color: #0060a8; }
+
+    /* D-PAD */
+    .dpad {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin-top: 50px;
+    }
+    .dpad-btn {
+      background-color: var(--gb-dpad);
+      position: absolute;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+    .dpad-btn:active { background-color: #000; transform: scale(0.95); }
+    .dpad-up { width: 35px; height: 40px; left: 37.5px; top: 0; border-radius: 5px 5px 0 0; }
+    .dpad-down { width: 35px; height: 40px; left: 37.5px; bottom: 0; border-radius: 0 0 5px 5px; }
+    .dpad-left { width: 40px; height: 35px; left: 0; top: 37.5px; border-radius: 5px 0 0 5px; }
+    .dpad-right { width: 40px; height: 35px; right: 0; top: 37.5px; border-radius: 0 5px 5px 0; }
+    .dpad-center { width: 35px; height: 35px; left: 37.5px; top: 37.5px; background-color: var(--gb-dpad); z-index: 1; }
+
+    /* Botões A/B */
+    .action-btns {
+      position: absolute;
+      right: 30px;
+      top: 450px;
+      display: flex;
+      gap: 20px;
+      transform: rotate(-25deg);
+    }
+    .btn-circle {
+      width: 55px;
+      height: 55px;
+      background-color: var(--gb-button);
+      border-radius: 50%;
+      box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.2);
+      font-weight: bold;
+    }
+    .btn-circle:active { transform: translateY(2px); box-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+
+    /* Select/Start */
+    .system-btns {
+      position: absolute;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-25deg);
+      display: flex;
+      gap: 25px;
+    }
+    .btn-pill {
+      width: 50px;
+      height: 12px;
+      background-color: #666;
+      border-radius: 10px;
+      box-shadow: 2px 2px 3px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    /* Grade do falante */
+    .speaker {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      display: grid;
+      grid-template-columns: repeat(4, 8px);
+      gap: 8px;
+      transform: rotate(-25deg);
+    }
+    .speaker-hole {
+      width: 8px;
+      height: 8px;
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 50%;
+    }
+
+    /* Customizações da Pokédex dentro da LCD */
+    .pokedex-screen-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      font-size: 10px;
+    }
+    .pokemon-list-mini {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+      scrollbar-width: none;
+    }
+    .pokemon-list-mini::-webkit-scrollbar { display: none; }
+    
+    .mini-card {
+      display: flex;
+      align-items: center;
+      padding: 4px 8px;
+      border: 2px solid transparent;
+      margin-bottom: 4px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 4px;
+    }
+    .mini-card.selected {
+      border-color: #000;
+      background: rgba(0,0,0,0.15);
+      animation: blink 0.8s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 0.8; }
+      50% { opacity: 1; }
+      100% { opacity: 0.8; }
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "marked": "https://esm.sh/marked@^12.0.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body>
+  <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
