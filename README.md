@@ -35,7 +35,7 @@ src/
 │       ├── components/  # Componentes específicos da feature
 │       ├── hooks/       # Hooks específicos da feature
 │       └── Pokedex.tsx  # Componente principal da feature
-├── services/        # Módulos para interagir com APIs externas (PokeAPI, Gemini)
+├── services/        # Módulos para interagir com o API Gateway do projeto
 ├── state/           # Configuração do Redux (store, slices)
 └── types.ts         # Tipos e interfaces globais
 ```
