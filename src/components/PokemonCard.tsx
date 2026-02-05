@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { PokemonBase, PokemonDetails, TYPE_COLORS, TYPE_NAMES_PT } from '../types';
 import { fetchPokemonDetails } from '../services/pokeService';
@@ -75,3 +74,4 @@ const PokemonCard: React.FC<PokemonCardProps> = ({ pokemon, onClick }) => {
 };
 
 export default PokemonCard;
+

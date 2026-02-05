@@ -35,3 +35,4 @@ export const stopSpeech = (): void => {
 if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
 }
+

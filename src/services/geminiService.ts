@@ -22,3 +22,4 @@ export const getProfessorInsight = async (pokemon: PokemonDetails): Promise<stri
     return "O Professor Carvalho está ocupado no laboratório agora. Por favor, volte mais tarde!";
   }
 };
+

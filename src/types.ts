@@ -1,4 +1,3 @@
-
 export interface PokemonBase {
   name: string;
   url: string;
@@ -101,3 +100,4 @@ export const STAT_NAMES_PT: Record<string, string> = {
   'special-defense': 'Def. Esp.',
   speed: 'Velocidade',
 };
+

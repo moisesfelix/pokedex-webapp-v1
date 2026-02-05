@@ -258,3 +258,4 @@ const PokemonDetailsModal: React.FC<PokemonDetailsModalProps> = ({
 };
 
 export default PokemonDetailsModal;
+
