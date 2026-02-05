@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 \noutput.txt
+
+# Arquivos temporarios
+output.txt
+output2.txt
+todo.todo
